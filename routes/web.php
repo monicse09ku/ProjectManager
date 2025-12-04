@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Models\Client;
+use App\Http\Controllers\Admin\ClientsController AS AdminClientsController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -18,11 +19,8 @@ Route::get('dashboard', function () {
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('clients', function () {
-    $clients = Client::all();
-    return Inertia::render('Client', [
-        'clients' => $clients,
-    ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('clients', AdminClientsController::class);
+});
 
 require __DIR__.'/settings.php';
