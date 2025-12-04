@@ -128,9 +128,14 @@
               </button>
               <button
                 type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                :disabled="loading"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                {{ editingClient ? 'Update' : 'Create' }}
+                <svg v-if="loading" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                <span>{{ editingClient ? 'Update' : 'Create' }}</span>
               </button>
             </div>
           </form>
@@ -155,9 +160,14 @@
             </button>
             <button
               @click="deleteClient"
-              class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              :disabled="deleteLoading"
+              class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              Delete
+              <svg v-if="deleteLoading" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+              <span>Delete</span>
             </button>
           </div>
         </div>
@@ -186,6 +196,9 @@ const showModal = ref(false)
 const showDeleteConfirm = ref(false)
 const editingClient = ref<Client | null>(null)
 const clientToDelete = ref<Client | null>(null)
+// Loading states for API calls
+const loading = ref(false)
+const deleteLoading = ref(false)
 const form = ref({
   client_name: '',
 })
@@ -232,12 +245,15 @@ const saveClient = () => {
     return
   }
 
+  loading.value = true
+
   if (editingClient.value) {
     router.put(`/clients/${editingClient.value.id}`, form.value, {
+      onStart: () => (loading.value = true),
+      onFinish: () => (loading.value = false),
       onSuccess: (page) => {
         const message = (page.props.flash as any)?.success || 'Client updated successfully'
         showToast(message, 'success')
-        router.reload()
         closeModal()
       },
       onError: (errs) => {
@@ -246,10 +262,11 @@ const saveClient = () => {
     })
   } else {
     router.post('/clients', form.value, {
+      onStart: () => (loading.value = true),
+      onFinish: () => (loading.value = false),
       onSuccess: (page) => {
         const message = (page.props.flash as any)?.success || 'Client created successfully'
         showToast(message, 'success')
-        router.reload()
         closeModal()
       },
       onError: (errs) => {
@@ -265,17 +282,23 @@ const confirmDelete = (client: Client) => {
 }
 
 const deleteClient = () => {
-  if (clientToDelete.value) {
-    router.delete(`/clients/${clientToDelete.value.id}`, {
-      onSuccess: (page) => {
-        const message = (page.props.flash as any)?.success || 'Client deleted successfully'
-        showToast(message, 'success')
-        showDeleteConfirm.value = false
-        clientToDelete.value = null
-        router.reload()
-      },
-    })
-  }
+  if (!clientToDelete.value) return
+
+  deleteLoading.value = true
+
+  router.delete(`/clients/${clientToDelete.value.id}`, {
+    onStart: () => (deleteLoading.value = true),
+    onFinish: () => (deleteLoading.value = false),
+    onSuccess: (page) => {
+      const message = (page.props.flash as any)?.success || 'Client deleted successfully'
+      showToast(message, 'success')
+      showDeleteConfirm.value = false
+      clientToDelete.value = null
+    },
+    onError: () => {
+      // keep modal open; user may retry
+    },
+  })
 }
 
 const formatDate = (dateString: string) => {
