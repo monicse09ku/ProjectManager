@@ -35,6 +35,9 @@
           <thead class="bg-gray-50">
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                No.
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                 Task
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
@@ -49,7 +52,10 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="task in tasks" :key="task.id" class="hover:bg-gray-50">
+            <tr v-for="(task, index) in tasks" :key="task.id" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                {{ index + 1 }}
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 {{ task.title }}
               </td>
@@ -105,7 +111,7 @@ interface Task {
   }
 }
 
-const page = usePage()
+const page = usePage<any>()
 const tasks = ref<Task[]>([])
 const toast = ref({
   show: false,
