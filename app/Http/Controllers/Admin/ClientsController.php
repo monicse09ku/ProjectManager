@@ -17,11 +17,6 @@ class ClientsController extends Controller
         ]);
     }
 
-    public function create()
-    {
-        return Inertia::render('Client');
-    }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -31,13 +26,6 @@ class ClientsController extends Controller
         $client = Client::create($validated);
 
         return back()->with('success', 'Client created successfully.');
-    }
-
-    public function edit(Client $client)
-    {
-        return Inertia::render('Client', [
-            'client' => $client,
-        ]);
     }
 
     public function update(Request $request, Client $client)
