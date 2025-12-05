@@ -33,6 +33,11 @@ const mainNavItems: NavItem[] = [
         href: '/projects',
         icon: LayoutGrid,
     },
+    {
+        title: 'Tasks',
+        href: '/tasks',
+        icon: LayoutGrid,
+    },
 ];
 
 const footerNavItems: NavItem[] = [

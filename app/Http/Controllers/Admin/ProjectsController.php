@@ -23,14 +23,6 @@ class ProjectsController extends Controller
         ]);
     }
 
-    public function create()
-    {
-        $clients = Client::all();
-        return Inertia::render('projects/Create', [
-            'clients' => $clients,
-        ]);
-    }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -48,15 +40,6 @@ class ProjectsController extends Controller
         $project = Project::create($validated);
 
         return back()->with('success', 'Project created successfully.');
-    }
-
-    public function edit(Project $project)
-    {
-        $clients = Client::all();
-        return Inertia::render('projects/Edit', [
-            'project' => $project,
-            'clients' => $clients,
-        ]);
     }
 
     public function update(Request $request, Project $project)
