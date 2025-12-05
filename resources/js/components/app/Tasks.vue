@@ -51,7 +51,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ task.id }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ task.title || task.Title || '—' }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ task.project?.title || '—' }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ findUserName(task.assigned_user) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ findUserName(task.assigned_user_id) }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ task.deadline }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ task.status }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
@@ -91,10 +91,10 @@
 
             <div class="mb-3">
               <label class="block text-gray-700 text-sm font-bold mb-2">Assigned User</label>
-              <select v-model="form.assigned_user" class="shadow border rounded w-full py-2 px-3 text-gray-700">
+              <select v-model="form.assigned_user_id" class="shadow border rounded w-full py-2 px-3 text-gray-700">
                 <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }}</option>
               </select>
-              <span v-if="errors.assigned_user" class="text-red-600 text-sm">{{ errors.assigned_user }}</span>
+              <span v-if="errors.assigned_user_id" class="text-red-600 text-sm">{{ errors.assigned_user_id }}</span>
             </div>
 
             <div class="mb-3">
@@ -163,13 +163,14 @@ import { router } from '@inertiajs/vue3'
 interface Task {
   id: number
   project_id: number
-  assigned_user: number
+  assigned_user_id: number
   title?: string
   Title?: string
   slug?: string
   deadline?: string
   status?: string
   project?: { id: number; title: string }
+  assignedUser?: { id: number; name: string }
 }
 
 const props = defineProps<{
@@ -203,7 +204,7 @@ const deleteLoading = ref(false)
 
 const form = ref({
   project_id: projects.value.length ? projects.value[0].id : null,
-  assigned_user: users.value.length ? users.value[0].id : null,
+  assigned_user_id: users.value.length ? users.value[0].id : null,
   title: '',
   slug: '',
   deadline: '',
@@ -222,8 +223,9 @@ const today = computed(() => {
 })
 
 const findUserName = (id: number | undefined) => {
+  console.log('Finding user name for ID:', id)
   if (!id) return '—'
-  const u = users.value.find((x) => x.id === id)
+  const u = users.value.find((x) => Number(x.id) === Number(id))
   return u ? u.name : '—'
 }
 
@@ -231,7 +233,7 @@ const openCreateModal = () => {
   editingTask.value = null
   form.value = {
     project_id: projects.value.length ? projects.value[0].id : null,
-    assigned_user: users.value.length ? users.value[0].id : null,
+    assigned_user_id: users.value.length ? users.value[0].id : null,
     title: '',
     slug: '',
     deadline: '',
@@ -245,7 +247,7 @@ const openEditModal = (task: Task) => {
   editingTask.value = task
   form.value = {
     project_id: task.project_id,
-    assigned_user: task.assigned_user,
+    assigned_user_id: task.assigned_user_id ?? (task as any).assigned_user ?? (task as any).assignedUser?.id,
     title: task.title || task.Title || '',
     slug: task.slug || '',
     deadline: task.deadline || '',

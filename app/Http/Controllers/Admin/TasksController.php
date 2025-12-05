@@ -29,7 +29,7 @@ class TasksController extends Controller
     {
         $validated = $request->validate([
             'project_id' => 'required|exists:projects,id',
-            'assigned_user' => 'required|exists:users,id',
+            'assigned_user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
             'deadline' => 'required|date',
             'status' => 'required|string',
@@ -48,7 +48,7 @@ class TasksController extends Controller
     {
         $validated = $request->validate([
             'project_id' => 'required|exists:projects,id',
-            'assigned_user' => 'required|exists:users,id',
+            'assigned_user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
             'deadline' => 'required|date',
             'status' => 'required|string',
