@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Models\Client;
 use App\Http\Controllers\Admin\ClientsController AS AdminClientsController;
+use App\Http\Controllers\Admin\ProjectsController AS AdminProjectsController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -21,6 +22,7 @@ Route::get('dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('clients', AdminClientsController::class);
+    Route::resource('projects', AdminProjectsController::class);
 });
 
 require __DIR__.'/settings.php';
