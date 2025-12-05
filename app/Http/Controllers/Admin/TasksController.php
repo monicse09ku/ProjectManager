@@ -61,7 +61,15 @@ class TasksController extends Controller
         $slugGenerator = new SlugGenerator();
         $validated['slug'] = $slugGenerator->generate(Task::class, $validated['title'], $task->id);
 
+        // Check if assigned user changed
+        $assignedUserChanged = $task->assigned_user_id !== $validated['assigned_user_id'];
+
         $task->update($validated);
+
+        // Send email notification if assigned user changed
+        if ($assignedUserChanged) {
+            SendTaskCreatedNotification::dispatch($task);
+        }
 
         return back()->with('success', 'Task updated successfully.');
     }
