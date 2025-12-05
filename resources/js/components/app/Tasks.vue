@@ -34,6 +34,22 @@
 
       <!-- Tasks Table -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Filter by Project</label>
+            <select v-model="filterProjectId" class="shadow border rounded py-2 px-3 text-gray-700">
+              <option :value="null">All Projects</option>
+              <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.title }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Filter by User</label>
+            <select v-model="filterUserId" class="shadow border rounded py-2 px-3 text-gray-700">
+              <option :value="null">All Users</option>
+              <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }}</option>
+            </select>
+          </div>
+        </div>
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
@@ -47,7 +63,7 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="task in tasks" :key="task.id" class="hover:bg-gray-50">
+            <tr v-for="task in filteredTasks" :key="task.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ task.id }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ task.title || task.Title || '—' }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ task.project?.title || '—' }}</td>
@@ -59,7 +75,7 @@
                 <button @click="confirmDelete(task)" class="text-red-600 hover:text-red-900 font-semibold">Delete</button>
               </td>
             </tr>
-            <tr v-if="tasks.length === 0">
+            <tr v-if="filteredTasks.length === 0">
               <td colspan="7" class="px-6 py-4 text-center text-gray-500">No tasks found. <a href="#" @click="openCreateModal" class="text-blue-600 hover:text-blue-900">Create one</a>.</td>
             </tr>
           </tbody>
@@ -201,6 +217,8 @@ const editingTask = ref<Task | null>(null)
 const taskToDelete = ref<Task | null>(null)
 const loading = ref(false)
 const deleteLoading = ref(false)
+const filterProjectId = ref<number | null>(null)
+const filterUserId = ref<number | null>(null)
 
 const form = ref({
   project_id: projects.value.length ? projects.value[0].id : null,
@@ -220,6 +238,14 @@ const toast = ref({
 const today = computed(() => {
   const now = new Date()
   return now.toISOString().split('T')[0]
+})
+
+const filteredTasks = computed(() => {
+  return tasks.value.filter((task) => {
+    const matchProject = filterProjectId.value === null || task.project_id === filterProjectId.value
+    const matchUser = filterUserId.value === null || task.assigned_user_id === filterUserId.value
+    return matchProject && matchUser
+  })
 })
 
 const findUserName = (id: number | undefined) => {
