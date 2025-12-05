@@ -9,6 +9,7 @@ use App\Models\Task;
 use App\Models\Project;
 use App\Models\User;
 use App\Services\SlugGenerator;
+use App\Jobs\SendTaskCreatedNotification;
 
 class TasksController extends Controller
 {
@@ -39,7 +40,10 @@ class TasksController extends Controller
         $slugGenerator = new SlugGenerator();
         $validated['slug'] = $slugGenerator->generate(Task::class, $validated['title']);
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
+        // Dispatch email notification job
+        SendTaskCreatedNotification::dispatch($task);
 
         return back()->with('success', 'Task created successfully.');
     }
@@ -57,7 +61,15 @@ class TasksController extends Controller
         $slugGenerator = new SlugGenerator();
         $validated['slug'] = $slugGenerator->generate(Task::class, $validated['title'], $task->id);
 
+        // Check if assigned user changed
+        $assignedUserChanged = $task->assigned_user_id !== $validated['assigned_user_id'];
+
         $task->update($validated);
+
+        // Send email notification if assigned user changed
+        if ($assignedUserChanged) {
+            SendTaskCreatedNotification::dispatch($task);
+        }
 
         return back()->with('success', 'Task updated successfully.');
     }
