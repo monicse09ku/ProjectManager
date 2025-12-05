@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->foreignId('assigned_user_id');
-            $table->string('Title');
+            $table->string('title');
             $table->string('slug');
             $table->date('deadline');
             $table->string('status')->defualt('active')->comments('active, inactive, archived');;

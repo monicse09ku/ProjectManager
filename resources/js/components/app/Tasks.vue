@@ -65,7 +65,7 @@
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="task in filteredTasks" :key="task.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ task.id }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ task.title || task.Title || '—' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ task.title }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ task.project?.title || '—' }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ findUserName(task.assigned_user_id) }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ task.deadline }}</td>
