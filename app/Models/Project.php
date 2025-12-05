@@ -22,4 +22,12 @@ class Project extends Model
         'end_date',
         'status',
     ];
+
+    /**
+     * Get the client that owns the project.
+     */
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
 }
