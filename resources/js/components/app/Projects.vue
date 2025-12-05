@@ -91,13 +91,13 @@
 
             <div class="mb-3">
               <label class="block text-gray-700 text-sm font-bold mb-2">Start Date</label>
-              <input v-model="form.start_date" type="date" class="shadow border rounded w-full py-2 px-3 text-gray-700" required />
+              <input v-model="form.start_date" type="date" :min="today" class="shadow border rounded w-full py-2 px-3 text-gray-700" required />
               <span v-if="errors.start_date" class="text-red-600 text-sm">{{ errors.start_date }}</span>
             </div>
 
             <div class="mb-3">
               <label class="block text-gray-700 text-sm font-bold mb-2">End Date</label>
-              <input v-model="form.end_date" type="date" class="shadow border rounded w-full py-2 px-3 text-gray-700" required />
+              <input v-model="form.end_date" type="date" :min="form.start_date || today" class="shadow border rounded w-full py-2 px-3 text-gray-700" required />
               <span v-if="errors.end_date" class="text-red-600 text-sm">{{ errors.end_date }}</span>
             </div>
 
@@ -155,7 +155,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
 
 interface Project {
@@ -185,6 +185,12 @@ watch(() => props.projects, (newProjects) => {
 watch(() => props.clients, (newClients) => {
   clients.value = newClients || []
 }, { deep: true })
+
+// Computed property for today's date in YYYY-MM-DD format
+const today = computed(() => {
+  const now = new Date()
+  return now.toISOString().split('T')[0]
+})
 
 const showModal = ref(false)
 const showDeleteConfirm = ref(false)
