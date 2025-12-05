@@ -13,11 +13,14 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
+const page = usePage()
+const user = page.props.auth?.user || { role: 'user' }
+
+const adminNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
@@ -39,6 +42,16 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
 ];
+
+const userNavItems: NavItem[] = [
+    {
+        title: 'My Tasks',
+        href: '/my-tasks',
+        icon: LayoutGrid,
+    },
+];
+
+const mainNavItems = user.role === 'admin' ? adminNavItems : userNavItems
 
 const footerNavItems: NavItem[] = [
     {
