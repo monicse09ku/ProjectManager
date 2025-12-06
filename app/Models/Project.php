@@ -30,4 +30,12 @@ class Project extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    /**
+     * Get the tasks for this project.
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }

@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\User;
 use App\Services\SlugGenerator;
 use App\Jobs\SendTaskCreatedNotification;
+use App\Http\Requests\TaskRequest;
 
 class TasksController extends Controller
 {
@@ -26,15 +27,9 @@ class TasksController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(TaskRequest $request)
     {
-        $validated = $request->validate([
-            'project_id' => 'required|exists:projects,id',
-            'assigned_user_id' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
-            'deadline' => 'required|date',
-            'status' => 'required|string',
-        ]);
+        $validated = $request->validated();
 
         // generate slug from title
         $slugGenerator = new SlugGenerator();
@@ -48,15 +43,9 @@ class TasksController extends Controller
         return back()->with('success', 'Task created successfully.');
     }
 
-    public function update(Request $request, Task $task)
+    public function update(TaskRequest $request, Task $task)
     {
-        $validated = $request->validate([
-            'project_id' => 'required|exists:projects,id',
-            'assigned_user_id' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
-            'deadline' => 'required|date',
-            'status' => 'required|string',
-        ]);
+        $validated = $request->validated();
 
         $slugGenerator = new SlugGenerator();
         $validated['slug'] = $slugGenerator->generate(Task::class, $validated['title'], $task->id);
