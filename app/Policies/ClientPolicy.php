@@ -12,7 +12,8 @@ class ClientPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        // Only admin can view clients
+        return $user->role === 'admin';
     }
 
     /**

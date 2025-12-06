@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ClientRequest extends FormRequest
 {
@@ -25,5 +27,17 @@ class ClientRequest extends FormRequest
         return [
             'client_name' => "required|string|max:255|{$uniqueRule}",
         ];
+    }
+
+    /**
+     * Always return JSON on validation failure for API usage.
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException(response()->json([
+            'status' => 'error',
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], 422));
     }
 }
