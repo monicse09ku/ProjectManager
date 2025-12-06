@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Client;
+use App\Http\Requests\ClientRequest;
 
 class ClientsController extends Controller
 {
@@ -17,32 +17,21 @@ class ClientsController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(ClientRequest $request)
     {
-        $validated = $request->validate([
-            'client_name' => 'required|string|max:255|unique:clients',
-        ]);
-
-        $client = Client::create($validated);
-
+        Client::create($request->validated());
         return back()->with('success', 'Client created successfully.');
     }
 
-    public function update(Request $request, Client $client)
+    public function update(ClientRequest $request, Client $client)
     {
-        $validated = $request->validate([
-            'client_name' => 'required|string|max:255|unique:clients,client_name,' . $client->id,
-        ]);
-
-        $client->update($validated);
-
+        $client->update($request->validated());
         return back()->with('success', 'Client updated successfully.');
     }
 
     public function destroy(Client $client)
     {
         $client->delete();
-
         return back()->with('success', 'Client deleted successfully.');
     }
 }
