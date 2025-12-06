@@ -6,26 +6,21 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ClientRequest extends FormRequest
+class ProjectRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(): array
     {
-        $clientId = $this->route('client')?->id;
-        $uniqueRule = $clientId ? "unique:clients,client_name,{$clientId}" : 'unique:clients';
-
         return [
-            'client_name' => "required|string|max:255|{$uniqueRule}",
+            'client_id' => 'required|exists:clients,id',
+            'title' => 'required|string|max:255',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'required|date|after:start_date',
+            'status' => 'required|string',
         ];
     }
 

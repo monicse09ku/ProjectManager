@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Project;
 use App\Models\Client;
-use Illuminate\Support\Str;
+use App\Http\Requests\ProjectRequest;
 use App\Services\SlugGenerator;
 
 class ProjectsController extends Controller
@@ -23,34 +22,22 @@ class ProjectsController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(ProjectRequest $request)
     {
-        $validated = $request->validate([
-            'client_id' => 'required|exists:clients,id',
-            'title' => 'required|string|max:255',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'status' => 'required|string',
-        ]);
+        $validated = $request->validated();
 
         // generate slug from title and ensure uniqueness
         $slugGenerator = new SlugGenerator();
         $validated['slug'] = $slugGenerator->generate(Project::class, $validated['title']);
 
-        $project = Project::create($validated);
+        Project::create($validated);
 
         return back()->with('success', 'Project created successfully.');
     }
 
-    public function update(Request $request, Project $project)
+    public function update(ProjectRequest $request, Project $project)
     {
-        $validated = $request->validate([
-            'client_id' => 'required|exists:clients,id',
-            'title' => 'required|string|max:255',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'status' => 'required|string',
-        ]);
+        $validated = $request->validated();
 
         // generate slug from title and ensure uniqueness excluding current project
         $slugGenerator = new SlugGenerator();

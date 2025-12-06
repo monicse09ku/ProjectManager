@@ -19,9 +19,12 @@ class ProjectResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'client_id' => $this->client_id,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
+            'status' => $this->status,
             'client' => new ClientResource($this->whenLoaded('client')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->format('M j, Y'),
+            'updated_at' => $this->updated_at?->format('M j, Y'),
         ];
     }
 }
