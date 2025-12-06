@@ -24,8 +24,8 @@ class TaskResource extends JsonResource
             'status' => $this->status,
             'project' => new ProjectResource($this->whenLoaded('project')),
             'assigned_user' => new UserResource($this->whenLoaded('assignedUser')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->format('M j, Y'),
+            'updated_at' => $this->updated_at?->format('M j, Y'),
         ];
     }
 }
