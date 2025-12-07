@@ -21,7 +21,8 @@ class ClientRequest extends FormRequest
      */
     public function rules(): array
     {
-        $clientId = $this->route('client')?->id;
+        $client = $this->route('client');
+        $clientId = is_object($client) ? $client->id : $client;
         $uniqueRule = $clientId ? "unique:clients,client_name,{$clientId}" : 'unique:clients';
 
         return [

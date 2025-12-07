@@ -47,8 +47,14 @@ class ClientController extends Controller
     /**
      * Update a client - Only admins
      */
-    public function update(ClientRequest $request, Client $client)
+    public function update(ClientRequest $request, $id)
     {
+        $client = Client::find($id);
+        
+        if (!$client) {
+            return $this->error('Client not found', null, 404);
+        }
+        
         $this->authorize('update', $client);
         $client->update($request->validated());
         return $this->success(new ClientResource($client), 'Client updated successfully');
@@ -57,8 +63,14 @@ class ClientController extends Controller
     /**
      * Delete a client - Only admins
      */
-    public function destroy(Client $client)
+    public function destroy($id)
     {
+        $client = Client::find($id);
+        
+        if (!$client) {
+            return $this->error('Client not found', null, 404);
+        }
+        
         $this->authorize('delete', $client);
         $client->delete();
         return $this->success(null, 'Client deleted successfully');
