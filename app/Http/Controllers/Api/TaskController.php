@@ -64,8 +64,14 @@ class TaskController extends Controller
     /**
      * Update a task - Admins can update all, users can update deadline and status only
      */
-    public function update(TaskUpdateRequest $request, Task $task)
+    public function update(TaskUpdateRequest $request, $id)
     {
+        $task = Task::find($id);
+        
+        if (!$task) {
+            return $this->error('Task not found', null, 404);
+        }
+        
         $this->authorize('update', $task);
 
         $user = auth()->user();
@@ -96,8 +102,14 @@ class TaskController extends Controller
     /**
      * Delete a task - Only admins
      */
-    public function destroy(Task $task)
+    public function destroy($id)
     {
+        $task = Task::find($id);
+        
+        if (!$task) {
+            return $this->error('Task not found', null, 404);
+        }
+        
         $this->authorize('delete', $task);
 
         $task->delete();
