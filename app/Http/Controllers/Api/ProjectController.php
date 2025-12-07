@@ -53,8 +53,14 @@ class ProjectController extends Controller
     /**
      * Update a project - Only admins can update
      */
-    public function update(ProjectRequest $request, Project $project)
+    public function update(ProjectRequest $request, $id)
     {
+        $project = Project::find($id);
+        
+        if (!$project) {
+            return $this->error('Project not found', null, 404);
+        }
+        
         $this->authorize('update', $project);
 
         $validated = $request->validated();
@@ -68,8 +74,14 @@ class ProjectController extends Controller
     /**
      * Delete a project - Only admins can delete
      */
-    public function destroy(Project $project)
+    public function destroy($id)
     {
+        $project = Project::find($id);
+        
+        if (!$project) {
+            return $this->error('Project not found', null, 404);
+        }
+        
         $this->authorize('delete', $project);
 
         $project->delete();
