@@ -85,18 +85,11 @@ class TaskController extends Controller
 
             // Check if assigned user changed for notification
             if (isset($validated['assigned_user_id']) && $task->assigned_user_id !== $validated['assigned_user_id']) {
-                $task->update($validated);
                 SendTaskCreatedNotification::dispatch($task);
-            } else {
-                $task->update($validated);
             }
-
-            return $this->success(new TaskResource($task->load(['project', 'assignedUser'])), 'Task updated successfully');
         }
 
-        // User updating their task (only deadline/status)
         $task->update($validated);
-
         return $this->success(new TaskResource($task->load(['project', 'assignedUser'])), 'Task updated successfully');
     }
 
